@@ -2,7 +2,6 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles
 
-
 def out_value(dut):
     return int(dut.uo_out.value)
 
