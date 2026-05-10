@@ -40,9 +40,7 @@ assign uo_out[7:1] = counter[7:1];
 
     // Output
     assign uo_out[0] = enable ? tremolo : 1'b0;
-
-    // Debug outputs
-    assign uo_out[7:1] = counter[22:16];
+   
 
     // Unused IOs
     assign uio_out = 8'b0;
