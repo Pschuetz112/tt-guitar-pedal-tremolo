@@ -86,13 +86,13 @@ async def test_project(dut):
     dut._log.info(f"saw_down_highs = {saw_down_highs}")
     assert saw_down_highs > 0
 
-    # Test 4: square waveform should create PWM activity
-    # waveform = 10, depth = 11, rate = 00, enable = 1
+    # Test 4: square waveform behavior should differ from saw-up
     dut.ui_in.value = 0b01011001
-    square_highs = await count_pwm_highs(dut, 512)
+    square_highs = await count_pwm_highs(dut, 2048)
 
     dut._log.info(f"square_highs = {square_highs}")
-    assert square_highs > 0
+
+    assert square_highs != saw_up_highs
 
     # Test 5: triangle waveform should create PWM activity
     # waveform = 11, depth = 11, rate = 00, enable = 1
