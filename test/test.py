@@ -1,3 +1,4 @@
+`default_nettype none
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles
