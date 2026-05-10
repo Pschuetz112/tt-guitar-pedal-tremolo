@@ -13,10 +13,11 @@ module tt_um_pschuetz_tremolo (
 
     // Inputs
     wire enable = ui_in[0];
-    wire [1:0] rate  = ui_in[2:1];
-    wire [1:0] depth = ui_in[4:3];
+    wire [1:0] rate     = ui_in[2:1];
+    wire [1:0] depth    = ui_in[4:3];
+    wire [1:0] waveform = ui_in[6:5];
 
-    // Slow LFO counter and fast PWM counter
+    // Counters
     reg [7:0] lfo_counter;
     reg [7:0] pwm_counter;
     reg [7:0] rate_divider;
@@ -46,9 +47,27 @@ module tt_um_pschuetz_tremolo (
         end
     end
 
-    // Depth control:
-    // depth 00 = light modulation
-    // depth 11 = deepest modulation
+    // Waveform generator
+    wire [7:0] saw_up;
+    wire [7:0] saw_down;
+    wire [7:0] square_wave;
+    wire [7:0] triangle_wave;
+    wire [7:0] waveform_value;
+
+    assign saw_up = lfo_counter;
+    assign saw_down = ~lfo_counter;
+    assign square_wave = lfo_counter[7] ? 8'd255 : 8'd0;
+    assign triangle_wave = lfo_counter[7] ? 
+                           {lfo_counter[6:0], 1'b0} :
+                           {~lfo_counter[6:0], 1'b0};
+
+    assign waveform_value =
+        (waveform == 2'b00) ? saw_up :
+        (waveform == 2'b01) ? saw_down :
+        (waveform == 2'b10) ? square_wave :
+                              triangle_wave;
+
+    // Depth control
     wire [7:0] min_level;
 
     assign min_level =
@@ -59,7 +78,7 @@ module tt_um_pschuetz_tremolo (
 
     wire [7:0] modulation_level;
 
-    assign modulation_level = min_level + {2'b00, lfo_counter[7:2]};
+    assign modulation_level = min_level + ((waveform_value >> 2) & 8'h3F);
 
     wire pwm_out;
 
@@ -78,6 +97,6 @@ module tt_um_pschuetz_tremolo (
     assign uio_out = 8'b0;
     assign uio_oe  = 8'b0;
 
-    wire _unused = &{ena, uio_in, ui_in[7:5], 1'b0};
+    wire _unused = &{ena, uio_in, ui_in[7], 1'b0};
 
 endmodule
