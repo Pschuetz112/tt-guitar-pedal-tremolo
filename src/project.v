@@ -30,11 +30,13 @@ module tt_um_pschuetz_tremolo (
     // Select different counter bits for speed
     wire tremolo;
 
-    assign tremolo =
-        (rate == 2'b00) ? counter[20] :
-        (rate == 2'b01) ? counter[21] :
-        (rate == 2'b10) ? counter[22] :
-                          counter[23];
+assign tremolo =
+    (rate == 2'b00) ? counter[4] :
+    (rate == 2'b01) ? counter[5] :
+    (rate == 2'b10) ? counter[6] :
+                      counter[7];
+
+assign uo_out[7:1] = counter[7:1];
 
     // Output
     assign uo_out[0] = enable ? tremolo : 1'b0;
