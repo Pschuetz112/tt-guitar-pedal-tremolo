@@ -2,20 +2,21 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles
 
-
 async def count_toggles(dut, cycles):
-    last = int(dut.uo_out[0].value)
+    last = int(dut.uo_out.value) & 0x1
     toggles = 0
 
     for _ in range(cycles):
         await ClockCycles(dut.clk, 1)
-        now = int(dut.uo_out[0].value)
+
+        now = int(dut.uo_out.value) & 0x1
 
         if now != last:
             toggles += 1
             last = now
 
     return toggles
+
 
 
 @cocotb.test()
@@ -38,7 +39,7 @@ async def test_project(dut):
     # Test 1: enable off should force tremolo output low
     dut.ui_in.value = 0b00000000
     await ClockCycles(dut.clk, 40)
-    assert int(dut.uo_out[0].value) == 0
+    assert (int(dut.uo_out.value) & 0x1) == 0
 
     # Test 2: enable on, fastest rate should toggle
     # ui_in[0] = enable
