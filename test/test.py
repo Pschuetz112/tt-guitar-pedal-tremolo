@@ -122,3 +122,4 @@ async def test_project(dut):
     await ClockCycles(dut.clk, 5)
 
     assert (out_value(dut) & 0x8) != 0
+
